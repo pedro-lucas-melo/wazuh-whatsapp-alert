@@ -1,0 +1,23 @@
+# Credenciais — NUNCA subir para o GitHub
+.env
+
+# Cache Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ambientes virtuais
+venv/
+.venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+
+# macOS
+.DS_Store
