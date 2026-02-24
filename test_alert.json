@@ -1,0 +1,16 @@
+{
+  "timestamp": "2024-01-01T14:24:37Z",
+  "rule": {
+    "id": "5712",
+    "level": 13,
+    "description": "SSH brute force - Multiple authentication failures",
+    "groups": ["authentication_failed", "ssh", "invalid_login"]
+  },
+  "agent": {
+    "name": "db-server",
+    "ip": "192.168.1.50"
+  },
+  "data": {
+    "srcip": "203.0.113.42"
+  }
+}
