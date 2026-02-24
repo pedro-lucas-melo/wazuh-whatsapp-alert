@@ -11,36 +11,55 @@ Instalação:
   Ver README.md
 
 Uso manual (teste):
-  python3 custom-whatsapp test_alert.json
+  python3 custom-whatsapp.py test_alert.json
 """
 
 import sys
 import json
 import logging
+import os
 from datetime import datetime
+from pathlib import Path
 
 # ──────────────────────────────────────────────
-#  CONFIGURAÇÕES — edite antes de usar
+#  CARREGA VARIÁVEIS DO ARQUIVO .env
 # ──────────────────────────────────────────────
 
-# Nível mínimo para disparar notificação (0–15)
-# 7 = médio | 10 = alto | 13 = crítico
-MIN_LEVEL = 7
+def load_env():
+    """Carrega o .env da mesma pasta do script."""
+    env_path = Path(__file__).parent / ".env"
+    if not env_path.exists():
+        print(f"[ERRO] Arquivo .env não encontrado em: {env_path}")
+        print("       Copie o .env.example para .env e preencha suas credenciais.")
+        sys.exit(1)
 
-# Provedor de envio: "twilio" ou "evolution"
-PROVIDER = "twilio"
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
 
-# ── Twilio ──────────────────────────────────
-TWILIO_ACCOUNT_SID = "ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-TWILIO_AUTH_TOKEN  = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-TWILIO_FROM        = "whatsapp:+14155238886"   # número Twilio sandbox
-TWILIO_TO          = "whatsapp:+5511999999999" # seu número (com DDI)
+load_env()
 
-# ── Evolution API (self-hosted) ──────────────
-EVOLUTION_API_URL  = "http://localhost:8080"
-EVOLUTION_API_KEY  = "your_api_key_here"
-EVOLUTION_INSTANCE = "minha-instancia"
-EVOLUTION_TO       = "5511999999999"           # sem o +
+# ──────────────────────────────────────────────
+#  CONFIGURAÇÕES — lidas do .env
+# ──────────────────────────────────────────────
+
+MIN_LEVEL = int(os.environ.get("MIN_LEVEL", "7"))
+PROVIDER  = os.environ.get("PROVIDER", "twilio")
+
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN  = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_FROM        = os.environ.get("TWILIO_FROM", "")
+TWILIO_TO          = os.environ.get("TWILIO_TO", "")
+
+EVOLUTION_API_URL  = os.environ.get("EVOLUTION_API_URL", "")
+EVOLUTION_API_KEY  = os.environ.get("EVOLUTION_API_KEY", "")
+EVOLUTION_INSTANCE = os.environ.get("EVOLUTION_INSTANCE", "")
+EVOLUTION_TO       = os.environ.get("EVOLUTION_TO", "")
 
 # ──────────────────────────────────────────────
 #  LOGGING
@@ -175,7 +194,7 @@ def send_whatsapp(message: str) -> bool:
 
 def main():
     if len(sys.argv) < 2:
-        print("Uso: custom-whatsapp <alert_file.json>")
+        print("Uso: custom-whatsapp.py <alert_file.json>")
         sys.exit(1)
 
     alert_file = sys.argv[1]
